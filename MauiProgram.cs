@@ -18,7 +18,7 @@ public static class MauiProgram
 			});
 
 #if IOS
-		builder.ConfigureImageSources(services => services.AddService<IFontImageSource>(sp =>
+		builder.ConfigureImageSources(services => services.AddService<FontImageSource>(sp =>
 			new UncenteredFontImageSourceService(sp.GetRequiredService<IFontManager>(), sp.GetService<ILogger<FontImageSourceService>>())));
 #endif
 

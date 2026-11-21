@@ -51,7 +51,7 @@ public class UncenteredFontImageSourceService : FontImageSourceService
             return null;
 
         var font = FontManager.GetFont(imageSource.Font);
-        var color = UIColor.Red; // DIAGNOSTIC: red marks glyphs drawn by this service.
+        var color = (imageSource.Color ?? Colors.White).ToPlatform();
         var glyph = (NSString)imageSource.Glyph;
 
         var attString = new NSAttributedString(imageSource.Glyph, font, color);
@@ -78,6 +78,6 @@ public class UncenteredFontImageSourceService : FontImageSourceService
         })
         // Automatic keeps a color-less glyph a template image so it takes the bar tint; an explicit
         // color has to stay AlwaysOriginal or UIKit re-tints it.
-        .ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+        .ImageWithRenderingMode(imageSource.Color == null ? UIImageRenderingMode.Automatic : UIImageRenderingMode.AlwaysOriginal);
     }
 }
