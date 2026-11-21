@@ -1,11 +1,17 @@
 name: iOS toolbar screenshots
 
 # Builds the repro with each MAUI version and screenshots it on an iOS 27.0 and an iOS 27.2
-# simulator. MAUI only sets the bar button title on iOS 27.1+, so 27.0 is the control.
+# simulator.
 on:
   workflow_dispatch:
   push:
     branches: [main]
+    # Docs, screenshots and workflow edits don't change the app; don't burn six xcode-27 runners on
+    # them. Run it by hand (workflow_dispatch) after a workflow change.
+    paths-ignore:
+      - '**.md'
+      - 'screenshots/**'
+      - '.github/**'
 
 jobs:
   screenshots:
@@ -89,7 +95,9 @@ jobs:
             sleep 20
             xcrun simctl io "$UDID" screenshot "shots/${{ matrix.name }}-ios$RT-detail.png"
 
-            xcrun simctl shutdown "$UDID"
+            # The simulator is sometimes already shut down by now (SimError 405); that's fine.
+            xcrun simctl shutdown "$UDID" || true
+            xcrun simctl delete "$UDID" || true
           done
           ls -la shots
 
