@@ -1,0 +1,84 @@
+name: iOS toolbar screenshots
+
+# Builds the repro with each MAUI version and screenshots it on an iOS 27.0 and an iOS 27.2
+# simulator. MAUI only sets the bar button title on iOS 27.1+, so 27.0 is the control.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  screenshots:
+    runs-on: xcode-27
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: maui-10.0.100
+            dotnet: '10'
+            sdk: '10.0.404'
+            workload: '10.0.404'
+            maui: '10.0.100'
+          - name: maui-10.0.130
+            dotnet: '10'
+            sdk: '10.0.404'
+            workload: '10.0.404'
+            maui: '10.0.130'
+          - name: maui-11.0.10
+            dotnet: '11'
+            sdk: '11.0.100'
+            workload: '11.0.100.1'
+            maui: '11.0.10'
+    name: ${{ matrix.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app
+
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: ${{ matrix.sdk }}
+
+      - name: Pin the SDK
+        run: echo '{"sdk":{"version":"${{ matrix.sdk }}","rollForward":"latestPatch"}}' > global.json
+
+      - name: Install workloads
+        run: dotnet workload install maui-ios --version ${{ matrix.workload }}
+
+      - name: Build
+        run: >
+          dotnet build MauiToolbarTitleRepro.csproj -c Debug
+          -f net${{ matrix.dotnet }}.0-ios -r iossimulator-arm64
+          -p:ReproDotNet=${{ matrix.dotnet }} -p:MauiVersion=${{ matrix.maui }}
+
+      - name: Screenshot on iOS 27.0 and 27.2
+        run: |
+          set -euo pipefail
+          APP=$(ls -d bin/Debug/net${{ matrix.dotnet }}.0-ios/iossimulator-arm64/*.app | head -1)
+          mkdir -p shots
+          xcrun simctl list runtimes
+          for RT in 27-0 27-2; do
+            UDID=$(xcrun simctl create "repro-$RT" com.apple.CoreSimulator.SimDeviceType.iPhone-17 com.apple.CoreSimulator.SimRuntime.iOS-$RT)
+            xcrun simctl boot "$UDID"
+            xcrun simctl bootstatus "$UDID" -b
+            xcrun simctl ui "$UDID" appearance dark
+            xcrun simctl install "$UDID" "$APP"
+
+            xcrun simctl launch "$UDID" com.companyname.mauitoolbartitlerepro
+            sleep 20
+            xcrun simctl io "$UDID" screenshot "shots/${{ matrix.name }}-ios$RT-main.png"
+
+            xcrun simctl terminate "$UDID" com.companyname.mauitoolbartitlerepro
+            SIMCTL_CHILD_REPRO_PUSH=1 xcrun simctl launch "$UDID" com.companyname.mauitoolbartitlerepro
+            sleep 20
+            xcrun simctl io "$UDID" screenshot "shots/${{ matrix.name }}-ios$RT-detail.png"
+
+            xcrun simctl shutdown "$UDID"
+          done
+          ls -la shots
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: shots/*.png

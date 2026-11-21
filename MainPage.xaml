@@ -1,0 +1,35 @@
+﻿<ContentPage
+    x:Class="MauiToolbarTitleRepro.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Toolbar">
+
+    <!--
+        Both primary items use the same icon. The only difference is whether Text is set.
+        Expected: both icons are vertically centered in the toolbar.
+
+        The two Secondary items produce the "..." overflow button, to compare its tint with the
+        primary icons. Shell.ForegroundColor is set in AppShell.xaml.
+    -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Filter">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="&#x2261;" Size="22" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem>
+            <ToolbarItem.IconImageSource>
+                <FontImageSource Glyph="&#x2261;" Size="22" />
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem Text="Info" Order="Secondary" />
+        <ToolbarItem Text="Share" Order="Secondary" />
+    </ContentPage.ToolbarItems>
+
+    <VerticalStackLayout Padding="30" Spacing="12">
+        <Label Text="Left toolbar icon: ToolbarItem with Text. Right toolbar icon: the same icon with no Text." />
+        <Label x:Name="VersionLabel" FontAttributes="Bold" />
+        <Button Text="Push a page with one titled item" Clicked="OnPushClicked" />
+    </VerticalStackLayout>
+
+</ContentPage>
