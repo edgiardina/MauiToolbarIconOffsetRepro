@@ -17,6 +17,11 @@ public static class MauiProgram
 				fonts.AddFont("FluentSystemIcons-Regular.ttf", "FluentRegular");
 			});
 
+#if IOS
+		builder.ConfigureImageSources(services => services.AddService<IFontImageSource>(sp =>
+			new UncenteredFontImageSourceService(sp.GetRequiredService<IFontManager>(), sp.GetService<ILogger<FontImageSourceService>>())));
+#endif
+
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
