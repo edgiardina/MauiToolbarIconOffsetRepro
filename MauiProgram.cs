@@ -13,6 +13,8 @@ public static class MauiProgram
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+				// Fluent System Icons (MIT, github.com/microsoft/fluentui-system-icons), as used by the app this came from.
+				fonts.AddFont("FluentSystemIcons-Regular.ttf", "FluentRegular");
 			});
 
 #if DEBUG

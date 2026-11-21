@@ -1,4 +1,4 @@
-﻿namespace MauiToolbarTitleRepro;
+namespace MauiToolbarTitleRepro;
 
 public partial class MainPage : ContentPage
 {
@@ -41,7 +41,7 @@ public partial class MainPage : ContentPage
 		page.ToolbarItems.Add(new ToolbarItem
 		{
 			Text = "Filter",
-			IconImageSource = new FontImageSource { Glyph = "≡", Size = 22 },
+			IconImageSource = new FontImageSource { Glyph = "", FontFamily = "FluentRegular" },
 		});
 
 		await Navigation.PushAsync(page);
