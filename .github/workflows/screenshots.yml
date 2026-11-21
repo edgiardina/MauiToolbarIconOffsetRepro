@@ -20,31 +20,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: maui-10.0.100
-            dotnet: '10'
-            sdk: '10.0.404'
-            workload: '10.0.404'
-            maui: '10.0.100'
-          - name: maui-10.0.101
-            dotnet: '10'
-            sdk: '10.0.404'
-            workload: '10.0.404'
-            maui: '10.0.101'
-          - name: maui-10.0.110
-            dotnet: '10'
-            sdk: '10.0.404'
-            workload: '10.0.404'
-            maui: '10.0.110'
-          - name: maui-10.0.120
-            dotnet: '10'
-            sdk: '10.0.404'
-            workload: '10.0.404'
-            maui: '10.0.120'
-          - name: maui-10.0.130
-            dotnet: '10'
-            sdk: '10.0.404'
-            workload: '10.0.404'
-            maui: '10.0.130'
           - name: maui-11.0.10
             dotnet: '11'
             sdk: '11.0.100'
